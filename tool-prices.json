@@ -1,0 +1,18 @@
+{
+  "connect_clickup": 0,
+  "list_connections": 0,
+  "disconnect_clickup": 0,
+  "list_teams": 8,
+  "list_spaces": 8,
+  "list_folders": 8,
+  "list_lists": 8,
+  "list_tasks": 8,
+  "get_task": 8,
+  "create_task": 16,
+  "update_task": 16,
+  "delete_task": 16,
+  "list_comments": 8,
+  "create_task_comment": 16,
+  "create_webhook": 16,
+  "audit_clickup_health": 40
+}

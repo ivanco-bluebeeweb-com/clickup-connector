@@ -1,0 +1,1123 @@
+{
+  "manifest_schema_version": 3,
+  "sdk_version": "5.13.1",
+  "app_id": "clickup-connector",
+  "version": "0.1.0",
+  "name": "ClickUp",
+  "description": "Full-featured ClickUp API v2 connector: workspaces, spaces, folders, lists, tasks, comments, webhooks, and health audits.",
+  "icon": "icon.svg",
+  "actions_explicit": true,
+  "system": false,
+  "capabilities": [
+    "clickup:manage"
+  ],
+  "tools": [
+    {
+      "name": "connect_clickup",
+      "description": "Connect your own ClickUp account by saving your Personal API token.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "create:connection"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "label": {
+            "default": "",
+            "description": "Friendly connection label, e.g. Engineering ClickUp.",
+            "title": "Label",
+            "type": "string"
+          },
+          "api_token": {
+            "description": "ClickUp Personal API token (pk_...) or OAuth Bearer token.",
+            "title": "Api Token",
+            "type": "string"
+          }
+        },
+        "required": [
+          "api_token"
+        ],
+        "title": "ConnectClickUpParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "description": "Connection ID",
+            "title": "Id",
+            "type": "string"
+          },
+          "label": {
+            "description": "Connection label",
+            "title": "Label",
+            "type": "string"
+          },
+          "status": {
+            "default": "connected",
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "label"
+        ],
+        "title": "ConnectResult",
+        "type": "object"
+      },
+      "event": "clickup-connector.connect_clickup",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_clickup-connector_chat"
+    },
+    {
+      "name": "list_connections",
+      "description": "List connected ClickUp accounts without exposing credentials.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "description": "Empty parameter model.",
+        "properties": {},
+        "title": "NoParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "ClickUpConnection": {
+            "properties": {
+              "id": {
+                "description": "Connection ID",
+                "title": "Id",
+                "type": "string"
+              },
+              "label": {
+                "description": "Connection label",
+                "title": "Label",
+                "type": "string"
+              },
+              "api_token_preview": {
+                "description": "Masked token",
+                "title": "Api Token Preview",
+                "type": "string"
+              },
+              "is_active": {
+                "default": true,
+                "description": "Active status",
+                "title": "Is Active",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "id",
+              "label",
+              "api_token_preview"
+            ],
+            "title": "ClickUpConnection",
+            "type": "object"
+          }
+        },
+        "properties": {
+          "connections": {
+            "items": {
+              "$ref": "#/$defs/ClickUpConnection"
+            },
+            "title": "Connections",
+            "type": "array"
+          },
+          "count": {
+            "default": 0,
+            "title": "Count",
+            "type": "integer"
+          }
+        },
+        "title": "ConnectionList",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_clickup-connector_chat"
+    },
+    {
+      "name": "disconnect_clickup",
+      "description": "Disconnect a ClickUp account.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "delete:connection"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "description": "Connection ID to remove.",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "connection_id"
+        ],
+        "title": "DisconnectClickUpParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "connection_id": {
+            "description": "Deleted connection ID",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "status": {
+            "default": "disconnected",
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "connection_id"
+        ],
+        "title": "DeleteResult",
+        "type": "object"
+      },
+      "event": "clickup-connector.disconnect_clickup",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_clickup-connector_chat"
+    },
+    {
+      "name": "list_teams",
+      "description": "List ClickUp workspaces (teams) accessible with the current token.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional connection ID.",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "title": "ListTeamsParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "items": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "count": {
+            "default": 0,
+            "title": "Count",
+            "type": "integer"
+          }
+        },
+        "title": "GenericListResult",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_clickup-connector_chat"
+    },
+    {
+      "name": "list_spaces",
+      "description": "List Spaces in a ClickUp team.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "team_id": {
+            "description": "ClickUp Team (Workspace) ID.",
+            "title": "Team Id",
+            "type": "string"
+          },
+          "connection_id": {
+            "default": "",
+            "description": "Optional connection ID.",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "team_id"
+        ],
+        "title": "ListSpacesParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "items": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "count": {
+            "default": 0,
+            "title": "Count",
+            "type": "integer"
+          }
+        },
+        "title": "GenericListResult",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_clickup-connector_chat"
+    },
+    {
+      "name": "list_folders",
+      "description": "List Folders in a ClickUp space.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "space_id": {
+            "description": "Space ID.",
+            "title": "Space Id",
+            "type": "string"
+          },
+          "connection_id": {
+            "default": "",
+            "description": "Optional connection ID.",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "space_id"
+        ],
+        "title": "ListFoldersParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "items": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "count": {
+            "default": 0,
+            "title": "Count",
+            "type": "integer"
+          }
+        },
+        "title": "GenericListResult",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_clickup-connector_chat"
+    },
+    {
+      "name": "list_lists",
+      "description": "List Lists in a space or folder.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "space_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Space ID (for folderless lists).",
+            "title": "Space Id"
+          },
+          "folder_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Folder ID (if lists belong to a folder).",
+            "title": "Folder Id"
+          },
+          "connection_id": {
+            "default": "",
+            "description": "Optional connection ID.",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "title": "ListListsParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "items": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "count": {
+            "default": 0,
+            "title": "Count",
+            "type": "integer"
+          }
+        },
+        "title": "GenericListResult",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_clickup-connector_chat"
+    },
+    {
+      "name": "list_tasks",
+      "description": "List tasks in a ClickUp list.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "list_id": {
+            "description": "List ID to query tasks from.",
+            "title": "List Id",
+            "type": "string"
+          },
+          "connection_id": {
+            "default": "",
+            "description": "Optional connection ID.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "page": {
+            "default": 0,
+            "description": "Page index (0-based).",
+            "title": "Page",
+            "type": "integer"
+          },
+          "archived": {
+            "default": false,
+            "description": "Include archived tasks.",
+            "title": "Archived",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "list_id"
+        ],
+        "title": "ListTasksParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "tasks": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Tasks",
+            "type": "array"
+          },
+          "count": {
+            "default": 0,
+            "title": "Count",
+            "type": "integer"
+          }
+        },
+        "title": "TaskList",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_clickup-connector_chat"
+    },
+    {
+      "name": "get_task",
+      "description": "Read one task in full by task ID.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "task_id": {
+            "description": "Task ID.",
+            "title": "Task Id",
+            "type": "string"
+          },
+          "connection_id": {
+            "default": "",
+            "description": "Optional connection ID.",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "task_id"
+        ],
+        "title": "GetTaskParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "description": "Task ID",
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "description": "Task name",
+            "title": "Name",
+            "type": "string"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Task status",
+            "title": "Status"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "TaskRecord",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_clickup-connector_chat"
+    },
+    {
+      "name": "create_task",
+      "description": "Create a task in a ClickUp list.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "create:task"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "list_id": {
+            "description": "Target List ID.",
+            "title": "List Id",
+            "type": "string"
+          },
+          "name": {
+            "description": "Task title / name.",
+            "title": "Name",
+            "type": "string"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": "",
+            "description": "Task markdown description.",
+            "title": "Description"
+          },
+          "priority": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Priority: 1=Urgent, 2=High, 3=Normal, 4=Low.",
+            "title": "Priority"
+          },
+          "connection_id": {
+            "default": "",
+            "description": "Optional connection ID.",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "list_id",
+          "name"
+        ],
+        "title": "CreateTaskParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "description": "Task ID",
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "description": "Task name",
+            "title": "Name",
+            "type": "string"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Task status",
+            "title": "Status"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "TaskRecord",
+        "type": "object"
+      },
+      "event": "clickup-connector.create_task",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_clickup-connector_chat"
+    },
+    {
+      "name": "update_task",
+      "description": "Update selected fields of an existing task.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "update:task"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "task_id": {
+            "description": "Task ID to update.",
+            "title": "Task Id",
+            "type": "string"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Updated task name.",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Updated description.",
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Updated status string.",
+            "title": "Status"
+          },
+          "priority": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Updated priority (1-4).",
+            "title": "Priority"
+          },
+          "connection_id": {
+            "default": "",
+            "description": "Optional connection ID.",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "task_id"
+        ],
+        "title": "UpdateTaskParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "description": "Task ID",
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "description": "Task name",
+            "title": "Name",
+            "type": "string"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Task status",
+            "title": "Status"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "TaskRecord",
+        "type": "object"
+      },
+      "event": "clickup-connector.update_task",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_clickup-connector_chat"
+    },
+    {
+      "name": "delete_task",
+      "description": "Delete a task from ClickUp.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "delete:task"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "task_id": {
+            "description": "Task ID to delete.",
+            "title": "Task Id",
+            "type": "string"
+          },
+          "connection_id": {
+            "default": "",
+            "description": "Optional connection ID.",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "task_id"
+        ],
+        "title": "DeleteTaskParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "connection_id": {
+            "description": "Deleted connection ID",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "status": {
+            "default": "disconnected",
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "connection_id"
+        ],
+        "title": "DeleteResult",
+        "type": "object"
+      },
+      "event": "clickup-connector.delete_task",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_clickup-connector_chat"
+    },
+    {
+      "name": "list_comments",
+      "description": "List comments on a task.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "task_id": {
+            "description": "Task ID.",
+            "title": "Task Id",
+            "type": "string"
+          },
+          "connection_id": {
+            "default": "",
+            "description": "Optional connection ID.",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "task_id"
+        ],
+        "title": "ListCommentsParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "comments": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Comments",
+            "type": "array"
+          },
+          "count": {
+            "default": 0,
+            "title": "Count",
+            "type": "integer"
+          }
+        },
+        "title": "CommentList",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_clickup-connector_chat"
+    },
+    {
+      "name": "create_task_comment",
+      "description": "Post a comment to a ClickUp task.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "create:comment"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "task_id": {
+            "description": "Task ID.",
+            "title": "Task Id",
+            "type": "string"
+          },
+          "comment_text": {
+            "description": "Text of comment to add.",
+            "title": "Comment Text",
+            "type": "string"
+          },
+          "notify_all": {
+            "default": false,
+            "description": "Whether to notify all watchers.",
+            "title": "Notify All",
+            "type": "boolean"
+          },
+          "connection_id": {
+            "default": "",
+            "description": "Optional connection ID.",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "task_id",
+          "comment_text"
+        ],
+        "title": "CreateTaskCommentParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "description": "Comment ID",
+            "title": "Id",
+            "type": "string"
+          },
+          "comment_text": {
+            "description": "Comment content",
+            "title": "Comment Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "comment_text"
+        ],
+        "title": "CommentRecord",
+        "type": "object"
+      },
+      "event": "clickup-connector.create_task_comment",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_clickup-connector_chat"
+    },
+    {
+      "name": "create_webhook",
+      "description": "Subscribe to ClickUp events via webhook.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "create:webhook"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "team_id": {
+            "description": "ClickUp Team / Workspace ID.",
+            "title": "Team Id",
+            "type": "string"
+          },
+          "endpoint": {
+            "description": "Target HTTPS webhook URL.",
+            "title": "Endpoint",
+            "type": "string"
+          },
+          "events": {
+            "default": [
+              "*"
+            ],
+            "description": "Event types to subscribe to.",
+            "items": {
+              "type": "string"
+            },
+            "title": "Events",
+            "type": "array"
+          },
+          "connection_id": {
+            "default": "",
+            "description": "Optional connection ID.",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "team_id",
+          "endpoint"
+        ],
+        "title": "CreateWebhookParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "description": "Webhook ID",
+            "title": "Id",
+            "type": "string"
+          },
+          "endpoint": {
+            "description": "Target endpoint",
+            "title": "Endpoint",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "endpoint"
+        ],
+        "title": "WebhookRecord",
+        "type": "object"
+      },
+      "event": "clickup-connector.create_webhook",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_clickup-connector_chat"
+    },
+    {
+      "name": "audit_clickup_health",
+      "description": "Audit ClickUp connectivity, workspace count, and accessible spaces.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Optional connection ID.",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "title": "AuditHealthParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "status": {
+            "description": "Audit status: healthy, degraded, or error",
+            "title": "Status",
+            "type": "string"
+          },
+          "user": {
+            "default": "Unknown",
+            "description": "ClickUp user or organization name",
+            "title": "User",
+            "type": "string"
+          },
+          "teams_count": {
+            "default": 0,
+            "description": "Number of teams accessible",
+            "title": "Teams Count",
+            "type": "integer"
+          },
+          "summary": {
+            "description": "Human-readable health summary",
+            "title": "Summary",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "summary"
+        ],
+        "title": "HealthAuditResult",
+        "type": "object"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "tool_clickup-connector_chat"
+    }
+  ],
+  "signals": [],
+  "schedules": [],
+  "required_scopes": [],
+  "icon_size_bytes": 543,
+  "lifecycle": {
+    "health_check": {
+      "interval_sec": 60
+    }
+  },
+  "panels": [
+    {
+      "panel_id": "clickup_sidebar",
+      "slot": "left",
+      "title": "",
+      "tree": {},
+      "icon": "",
+      "refresh": "manual",
+      "center_overlay": false
+    },
+    {
+      "panel_id": "clickup_settings",
+      "slot": "center",
+      "title": "",
+      "tree": {},
+      "icon": "",
+      "refresh": "manual",
+      "center_overlay": false
+    }
+  ],
+  "pricing": {
+    "model": "per_action",
+    "currency": "tokens",
+    "monthly_price": 0,
+    "revenue_split_dev": 70,
+    "free_tools": [
+      "connect_clickup",
+      "list_connections",
+      "disconnect_clickup"
+    ],
+    "tool_prices": {
+      "connect_clickup": 0,
+      "list_connections": 0,
+      "disconnect_clickup": 0,
+      "list_teams": 8,
+      "list_spaces": 8,
+      "list_folders": 8,
+      "list_lists": 8,
+      "list_tasks": 8,
+      "get_task": 8,
+      "create_task": 16,
+      "update_task": 16,
+      "delete_task": 16,
+      "list_comments": 8,
+      "create_task_comment": 16,
+      "create_webhook": 16,
+      "audit_clickup_health": 40
+    }
+  }
+}
