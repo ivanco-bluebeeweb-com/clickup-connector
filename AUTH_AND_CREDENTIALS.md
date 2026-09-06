@@ -1,18 +1,14 @@
-# ClickUp Connector — Authentication & Credentials
+# ClickUp Connector — Authentication & Credentials Standard
 
-## Principle
-This connector uses customer-provided credentials and holds them only in Imperal encrypted secrets storage. The panel never displays saved secret values.
+## 1. Supported Authentication Mechanisms
+1. **Personal API Token**:
+   - Токен вида `pk_...` передается в заголовке `Authorization: <token>`.
+2. **OAuth 2.0 Web Flow**:
+   - Authorization: `https://app.clickup.com/api?client_id={client_id}&redirect_uri={redirect_uri}`
+   - Token Exchange: `POST https://api.clickup.com/api/v2/oauth/token`
+3. **Client Credentials**:
+   - Для автоматических сервисных аккаунтов через зарегистрированное ClickUp App.
 
-## Authentication decision gate
-Before implementation, determine the officially supported model for ClickUp:
-- **OAuth 2.0:** use authorization code + PKCE where supported; persist refresh metadata securely and handle re-consent.
-- **Service-to-service OAuth:** request only documented client credentials/scopes and validate with a harmless call.
-- **API token/key:** ask for the exact token plus required account/tenant/base URL only when the vendor requires them.
-- **Self-hosted/local:** require HTTPS base URL and validate ownership/connectivity without exposing credential material.
-
-## Required UX behavior
-- Every credential input has a visible label and contextual placeholder.
-- Explain where the credential is obtained only in the help modal, not duplicated in the sidebar.
-- On connect, validate without mutating the provider account; on failure, return a safe actionable message.
-- Connection lists show label, provider identity/tenant where safe, health/reauthorization state, and masked identifiers.
-- Disconnect deletes only the locally stored Imperal credential.
+## 2. Storage & Security
+- Секреты сохраняются в `ctx.secrets` под ключом `clickup_connections`.
+- В UI токены маскируются (`pk_***`).

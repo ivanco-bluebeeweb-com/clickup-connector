@@ -1,22 +1,26 @@
-# ClickUp Connector — Preparation
+# ClickUp Connector — Preparation & Architecture
 
-## Product scope
-Build a secure Imperal connector for **ClickUp** in **C25. Project & Work Management**. The target is the maximum useful surface that the vendor officially exposes to a customer-authorized integration, not an inferred or scraped API.
+**Service**: ClickUp  
+**Target API**: ClickUp REST API v2  
+**Endpoint**: `https://api.clickup.com/api/v2`  
+**Auth Endpoint**: `https://app.clickup.com/api` (OAuth 2.0 Web Flow & Personal API Token)  
+**Official Docs**: `https://clickup.com/api`
 
-## Delivery gates
-1. Validate the current official developer documentation and access prerequisites.
-2. Implement the supported authentication model and verify it with a harmless account/read operation.
-3. Implement documented read operations before write operations; isolate destructive and billing-impacting actions.
-4. Add onboarding and the planned UI before the panel implementation.
-5. Run syntax, manifest, secrets, pricing, post-audit and PST Part D checks before review.
+---
 
-## Source to validate
-- Catalog source: https://clickup.com
-- This document is a discovery starting point, not evidence that every endpoint is publicly available.
+## 1. Executive Summary & Market Position
+ClickUp — одна из самых быстрорастущих и многофункциональных платформ управления проектами и командной работы (~12% мирового рынка). Коннектор Imperal Cloud предоставляет:
+- Подключение по Personal API Token (pk_...) и OAuth 2.0;
+- Полную навигацию по 4-уровневой иерархии: Workspace (Team) -> Space -> Folder -> List -> Task;
+- Полный CRUD задач (Task ID, статус, приоритет, исполнители);
+- Работу с комментариями к задачам;
+- Регистрацию вебхуков на события (taskCreated, taskUpdated);
+- Value-add аудит здоровья структуры рабочего пространства.
 
-## Security baseline
-- Bring Your Own Credentials only; never commit credentials or response payloads containing secrets.
-- Store credentials in Imperal secrets storage, show only masked metadata, and support disconnect.
-- Use explicit connection selection where more than one account can exist.
-- Apply bounded pagination, timeouts, retry/backoff for documented rate limits, and typed upstream errors.
-- Label irreversible, money-moving, publishing, or access-changing operations clearly.
+---
+
+## 2. Ключевые архитектурные особенности API
+1. **Иерархическая адресация**: Создание задач требует `list_id`, списков — `folder_id` или `space_id`.
+2. **Токены**: Личный токен имеет префикс `pk_` и передается в заголовке `Authorization: pk_...` (без префикса Bearer) либо `Bearer` для OAuth.
+3. **Пагинация**: Стандартная страничная пагинация (`page=0, 1...`).
+4. **Rate Limits**: 100 запросов в минуту на токен.
