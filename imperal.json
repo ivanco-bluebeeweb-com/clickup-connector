@@ -1119,5 +1119,12 @@
       "create_webhook": 16,
       "audit_clickup_health": 40
     }
-  }
+  },
+  "secrets": [
+    {
+      "name": "clickup_connections",
+      "description": "Stored encrypted connections and credentials for clickup-connector",
+      "required": false
+    }
+  ]
 }
