@@ -1,21 +1,18 @@
 {
-  "pricing_model": "per_action",
-  "tool_prices": {
-    "connect_clickup": 0,
-    "list_connections": 0,
-    "disconnect_clickup": 0,
-    "list_teams": 1,
-    "list_spaces": 1,
-    "list_folders": 1,
-    "list_lists": 1,
-    "list_tasks": 1,
-    "get_task": 1,
-    "create_task": 2,
-    "update_task": 2,
-    "delete_task": 2,
-    "list_comments": 1,
-    "create_task_comment": 2,
-    "create_webhook": 3,
-    "audit_clickup_health": 5
-  }
+  "connect_clickup": 0,
+  "list_connections": 0,
+  "disconnect_clickup": 0,
+  "list_teams": 1,
+  "list_spaces": 1,
+  "list_folders": 1,
+  "list_lists": 1,
+  "list_tasks": 1,
+  "get_task": 1,
+  "create_task": 2,
+  "update_task": 2,
+  "delete_task": 2,
+  "list_comments": 1,
+  "create_task_comment": 2,
+  "create_webhook": 2,
+  "audit_clickup_health": 5
 }

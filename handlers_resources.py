@@ -26,7 +26,7 @@ async def list_teams(ctx, params: ListTeamsParams) -> ActionResult:
     client = await resolve_client(ctx, params.connection_id)
     try:
         teams = await client.get_teams()
-        return ActionResult.ok({"teams": teams, "count": len(teams)}, summary=f"Found {len(teams)} ClickUp team(s).")
+        return ActionResult.success({"teams": teams, "count": len(teams)}, summary=f"Found {len(teams)} ClickUp team(s).")
     except Exception as e:
         return ActionResult.error(f"Error listing teams: {e}")
 
@@ -42,7 +42,7 @@ async def list_spaces(ctx, params: ListSpacesParams) -> ActionResult:
     client = await resolve_client(ctx, params.connection_id)
     try:
         spaces = await client.get_spaces(team_id=params.team_id)
-        return ActionResult.ok({"spaces": spaces, "count": len(spaces)}, summary=f"Found {len(spaces)} space(s).")
+        return ActionResult.success({"spaces": spaces, "count": len(spaces)}, summary=f"Found {len(spaces)} space(s).")
     except Exception as e:
         return ActionResult.error(f"Error listing spaces: {e}")
 
@@ -58,7 +58,7 @@ async def list_folders(ctx, params: ListFoldersParams) -> ActionResult:
     client = await resolve_client(ctx, params.connection_id)
     try:
         folders = await client.get_folders(space_id=params.space_id)
-        return ActionResult.ok({"folders": folders, "count": len(folders)}, summary=f"Found {len(folders)} folder(s).")
+        return ActionResult.success({"folders": folders, "count": len(folders)}, summary=f"Found {len(folders)} folder(s).")
     except Exception as e:
         return ActionResult.error(f"Error listing folders: {e}")
 
@@ -74,7 +74,7 @@ async def list_lists(ctx, params: ListListsParams) -> ActionResult:
     client = await resolve_client(ctx, params.connection_id)
     try:
         lists = await client.get_lists(folder_id=params.folder_id, space_id=params.space_id)
-        return ActionResult.ok({"lists": lists, "count": len(lists)}, summary=f"Found {len(lists)} list(s).")
+        return ActionResult.success({"lists": lists, "count": len(lists)}, summary=f"Found {len(lists)} list(s).")
     except Exception as e:
         return ActionResult.error(f"Error listing lists: {e}")
 
@@ -195,7 +195,7 @@ async def delete_task(ctx, params: DeleteTaskParams) -> ActionResult:
     client = await resolve_client(ctx, params.connection_id)
     try:
         await client.delete_task(task_id=params.task_id)
-        return ActionResult.ok({"task_id": params.task_id, "deleted": True}, summary=f"Deleted task {params.task_id}.")
+        return ActionResult.success({"task_id": params.task_id, "deleted": True}, summary=f"Deleted task {params.task_id}.")
     except Exception as e:
         return ActionResult.error(f"Error deleting task: {e}")
 
