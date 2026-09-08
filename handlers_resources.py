@@ -139,13 +139,12 @@ async def create_task(ctx, params: CreateTaskParams) -> ActionResult:
     """Create a task."""
     client = await resolve_client(ctx, params.connection_id)
     try:
-        t = await client.create_task(
-            list_id=params.list_id,
-            name=params.name,
-            description=params.description,
-            priority=params.priority,
-            due_date=params.due_date
-        )
+        payload = {"name": params.name}
+        if params.description:
+            payload["description"] = params.description
+        if params.priority is not None:
+            payload["priority"] = params.priority
+        t = await client.create_task(list_id=params.list_id, payload=payload)
         st = t.get("status", {}).get("status", "") if isinstance(t.get("status"), dict) else str(t.get("status", ""))
         return ActionResult.success(
             TaskRecord(id=t.get("id", ""), name=t.get("name", ""), status=st, url=t.get("url")),
@@ -172,7 +171,7 @@ async def update_task(ctx, params: UpdateTaskParams) -> ActionResult:
         if params.description is not None: fields["description"] = params.description
         if params.status is not None: fields["status"] = params.status
         if params.priority is not None: fields["priority"] = params.priority
-        t = await client.update_task(task_id=params.task_id, **fields)
+        t = await client.update_task(task_id=params.task_id, payload=fields)
         st = t.get("status", {}).get("status", "") if isinstance(t.get("status"), dict) else str(t.get("status", ""))
         return ActionResult.success(
             TaskRecord(id=t.get("id", ""), name=t.get("name", ""), status=st, url=t.get("url")),
