@@ -111,6 +111,5 @@ async def disconnect_clickup(ctx, params: DisconnectClickUpParams) -> ActionResu
         return ActionResult.error(f"Connection {params.connection_id} not found.")
     await _save_connections(ctx, new_connections)
     return ActionResult.success(
-        DeleteResult(connection_id=params.connection_id, status="disconnected"),
-        summary=f"Connection {params.connection_id} removed."
+        DeleteResult(connection_id=params.connection_id, status="disconnected"), summary=f"Connection {params.connection_id} removed."
     )
